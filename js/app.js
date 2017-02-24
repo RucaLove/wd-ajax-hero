@@ -56,5 +56,33 @@
     }
   };
 
-  // ADD YOUR CODE HERE
+  $("button").click(function(event) {
+    if ($("#search").val() !== "") {
+      event.preventDefault();
+      $.ajax({
+        url: `https://www.omdbapi.com/?s=${$("#search").val()}`,
+        method: "GET",
+        success: function(data) {
+          for (let i = 0; i < data.Search.length; i++) {
+            $.ajax({
+              url: `https://www.omdbapi.com/?t=${data.Search[i].Title}`,
+              method: "GET",
+              success: function(data) {
+              //stringify data
+                let moviePick = {
+                  Title: JSON.stringify(data.Title).replace(/"/g, ""),
+                  Year: JSON.stringify(data.Year).replace(/"/g, ""),
+                  Plot: JSON.stringify(data.Plot).replace(/"/g, ""),
+                  poster: JSON.stringify(data.Poster).replace(/"/g, "")
+                };
+                movies.push(moviePick);
+                renderMovies();
+                $("#search").val("");
+              }
+            });
+          }
+        }
+      });
+    }
+  });
 })();
